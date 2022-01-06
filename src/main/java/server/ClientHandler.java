@@ -98,6 +98,17 @@ public class ClientHandler extends Thread {
 						matching();
 						break;
 					}
+					case DISCONNECT:
+						ClientHandler bx;
+						if (Server.listMatched.get(clientInfo) != null
+								&& Server.listMatched.get(clientInfo).getPeerInfo().equals(username)) {
+							bx = Server.listMatched.get(clientInfo);
+							Message exit = new Message(username, null, Status.EXIT);
+							bx.sendMessage(exit);
+						}
+						removeMatched();
+						Server.listMatched.remove(username);
+						break;
 					// luông 2 if đầu tiền kiểm tra trùng tên không, else trường hợp không trùng tên cho thằng đó vô hàng đợi
 					case CONNECT: {
 						if (Server.listMatched.get(received.getName()) != null

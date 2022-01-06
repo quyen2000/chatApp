@@ -3,6 +3,7 @@ package gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
@@ -43,11 +44,11 @@ public class UserFrame extends JFrame {
 	private JScrollPane scroll;
 	private JButton btnSend;
 	private JButton btnConnect;
-	private JButton btnMatch;
 	private JTextArea displayArea;
 	private JTextField txMessage;
 	private JTextField txName;
 	private Client client;
+	private JButton btnEnd;
 	private volatile boolean running = true;
 	Thread t;
 
@@ -200,12 +201,12 @@ public class UserFrame extends JFrame {
 											Message accept = new Message(client.getName(), null, Status.OK);
 											client.sendMessage(accept);
 											client.setMatched(true);
-											btnMatch.setEnabled(false);
+											btnEnd.setEnabled(true);
 											displayArea.setText("");
 										} else {
 											Message refuse = new Message(client.getName(), null, Status.REFUSE);
 											client.sendMessage(refuse);
-											btnMatch.setEnabled(true);
+											btnEnd.setEnabled(false);
 										}
 										break;
 									case CHAT:
@@ -221,14 +222,14 @@ public class UserFrame extends JFrame {
 												"Người kia đã từ chối ghép đôi, bạn sẽ quay lại hàng chờ !",
 												"Thông báo", JOptionPane.ERROR_MESSAGE);
 										client.setMatched(false);
-										btnMatch.setEnabled(true);
+										btnEnd.setEnabled(true);
 										break;
 									case EXIT:
 										JOptionPane.showMessageDialog(null,
 												"Người kia đã thoát khỏi phòng chat, bạn sẽ quay lại hàng chờ !",
 												"Thông báo", JOptionPane.ERROR_MESSAGE);
 										client.setMatched(false);
-										btnMatch.setEnabled(true);
+										btnEnd.setEnabled(false);
 										displayArea.setText("");
 										break;
 									case CONNECTED:
@@ -256,24 +257,28 @@ public class UserFrame extends JFrame {
 		btnConnect.setBounds(411, 20, 85, 30);
 		insideCenter.add(btnConnect);
 
-		btnMatch = new JButton("Ghép đôi");
-		btnMatch.setEnabled(false);
-		btnMatch.setBounds(524, 20, 85, 30);
-		btnMatch.addActionListener(new ActionListener() {
+		btnEnd = new JButton("Thoát");
+		btnEnd.setForeground(Color.BLACK);
+		btnEnd.setFont(new Font("Arial", Font.PLAIN, 10));
+		btnEnd.setEnabled(false);
+		btnEnd.setBounds(524, 20, 85, 30);
+		btnEnd.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (!client.isMatched()) {
 					try {
-						Message refuse = new Message(client.getName(), null, Status.MATCH);
-						client.sendMessage(refuse);
+						Message end = new Message(null, null, Status.DISCONNECT);
+						client.sendMessage(end);
+						client.setMatched(false);
+						btnEnd.setEnabled(false);
+						displayArea.setText("");
 					} catch (IOException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
 				}
-
-			}
 		});
-		insideCenter.add(btnMatch);
+		insideCenter.add(btnEnd);
+		
 	}
+	
 }

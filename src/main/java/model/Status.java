@@ -12,7 +12,8 @@ public enum Status {
 	CONNECT,
 	OK,
 	EXIT,
-	REFUSE
+	REFUSE,
+	DISCONNECT
 
 	
 }
